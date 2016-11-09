@@ -9,6 +9,7 @@ public class GameLogic : MonoBehaviour {
 	public GameObject movingPile;
 	public GameObject rotatingPile;
 	public GameObject circularSaw;
+	public GameObject guillotine;
 
 	public Transform player;
 	public Transform containerSpawnPoint;
@@ -19,6 +20,7 @@ public class GameLogic : MonoBehaviour {
 	List<GameObject> movingPiles = new List<GameObject> ();
 	List<GameObject> rotatingPiles = new List<GameObject> ();
 	List<GameObject> circularSaws = new List<GameObject> ();
+	List<GameObject> guillotines = new List<GameObject> ();
 
 	float containerLength;
 	int containerBufferBack = 2;
@@ -79,24 +81,34 @@ public class GameLogic : MonoBehaviour {
 			}
 
 			if (level == 3) {
-				if (containerCount > 0 && containerCount % 3 == 0) {
-					GameObject circularSaw = getCircularSaw ();
-					circularSaw.transform.position = new Vector3 (
-						containerSpawnPoint.position.x,
-						circularSaw.transform.position.y,
-						circularSaw.transform.position.z
-					);
-					circularSaw.GetComponent<CircularSawMovement> ().startAngle = -45f;
-					circularSaw.SetActive (true);
-					GameObject circularSaw2 = getCircularSaw ();
-					circularSaw2.transform.position = new Vector3 (
-						containerSpawnPoint.position.x + 5,
-						circularSaw2.transform.position.y,
-						circularSaw2.transform.position.z
-					);
-					circularSaw2.GetComponent<CircularSawMovement> ().startAngle = 45f;
-					circularSaw2.GetComponent<CircularSawMovement> ().startDirection = -1f;
-					circularSaw2.SetActive (true);
+				if (containerCount > 0 && containerCount % 2 == 0) {
+					if (containerCount % 4 == 0) {
+						GameObject circularSaw = getCircularSaw ();
+						circularSaw.transform.position = new Vector3 (
+							containerSpawnPoint.position.x,
+							circularSaw.transform.position.y,
+							circularSaw.transform.position.z
+						);
+						circularSaw.GetComponent<CircularSawMovement> ().startAngle = -45f;
+						circularSaw.SetActive (true);
+						GameObject circularSaw2 = getCircularSaw ();
+						circularSaw2.transform.position = new Vector3 (
+							containerSpawnPoint.position.x + 80f,
+							circularSaw2.transform.position.y,
+							circularSaw2.transform.position.z
+						);
+						circularSaw2.GetComponent<CircularSawMovement> ().startAngle = 45f;
+						circularSaw2.GetComponent<CircularSawMovement> ().startDirection = -1f;
+						circularSaw2.SetActive (true);
+					} else {
+						GameObject guillotine = getGuillotine ();
+						guillotine.transform.position = new Vector3 (
+							containerSpawnPoint.position.x,
+							guillotine.transform.position.y,
+							guillotine.transform.position.z
+						);
+						guillotine.SetActive (true);					
+					}
 				}
 			}
 
@@ -191,6 +203,22 @@ public class GameLogic : MonoBehaviour {
 		return newCircularSaw;
 	}
 
+	GameObject getGuillotine() {
+		GameObject newGuillotine = null;
+		for (int i = 0; i < guillotines.Count; ++i) {
+			if (!guillotines[i].activeSelf || guillotines[i].transform.position.x < (player.transform.position.x - containerBufferBack * containerLength)) {
+				newGuillotine = guillotines [i];
+				break;
+			}
+		}
+		if (newGuillotine == null) {
+			newGuillotine = (GameObject) Instantiate (guillotine);
+			guillotines.Add (newGuillotine);
+		}
+		newGuillotine.SetActive (false);
+		return newGuillotine;
+	}
+
 	public void Reset ()
 	{
 		if (level == 1) {
@@ -222,6 +250,10 @@ public class GameLogic : MonoBehaviour {
 			Destroy (circularSaw);
 		}
 		circularSaws = new List<GameObject> ();
+		foreach (GameObject guillotine in guillotines) {
+			Destroy (guillotine);
+		}
+		guillotines = new List<GameObject> ();
 		containerSpawnPoint.transform.position = new Vector3 (0, 0, 0);
 		containerCount = 0;
 	}
