@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour {
 
 	Rigidbody playerRB;
 	public float xVelocity;
-	public float yVelocity;
-	public float zVelocity;
+	public float moveVelocity;
+
+	bool inverse = false;
 
 	void Awake ()
 	{
@@ -20,7 +22,11 @@ public class PlayerMovement : MonoBehaviour {
 		float moveHorizontal = CrossPlatformInputManager.GetAxis ("Horizontal");
 		float moveVertical = CrossPlatformInputManager.GetAxis ("Vertical");
 
-		playerRB.velocity = new Vector3 (xVelocity, yVelocity * moveVertical, -zVelocity * moveHorizontal);
+		if (inverse) {
+			moveVertical *= -1;
+		}
+
+		playerRB.velocity = new Vector3 (xVelocity, moveVelocity * moveVertical, -moveVelocity * moveHorizontal);
 	}
 
 	void OnCollisionEnter (Collision col)
@@ -36,5 +42,15 @@ public class PlayerMovement : MonoBehaviour {
 	void OnDisable ()
 	{
 		playerRB.isKinematic = true;
+	}
+
+	public void setInverse(bool inverse)
+	{
+		this.inverse = inverse;
+	}
+
+	public void setVelocity(Slider slider)
+	{
+		this.moveVelocity = slider.value;
 	}
 }

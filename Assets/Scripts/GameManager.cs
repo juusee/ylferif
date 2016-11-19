@@ -10,12 +10,23 @@ public class GameManager : MonoBehaviour {
 	public GameObject panel;
 	public GameObject startCounter;
 
+	public Material nightSkybox;
+	public Material daySkybox;
+	public Cubemap nightCubemap;
+	public Cubemap dayCubemap;
+
 	WaitForSeconds endWait;
 	string level = null;
+	bool isNight = false;
 
 	public void startGame(string level)
 	{
 		this.level = level;
+	}
+
+	public void ChangeNight(bool isNight)
+	{
+		this.isNight = isNight;
 	}
 
 	void Start ()
@@ -25,7 +36,7 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine (GameLoop());
 	}
 
-	private IEnumerator GameLoop ()
+	IEnumerator GameLoop ()
 	{		
 		panel.SetActive (true);
 		yield return StartCoroutine (RoundStarting());
@@ -39,7 +50,7 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine (GameLoop ());
 	}
 
-	private IEnumerator RoundStarting ()
+	IEnumerator RoundStarting ()
 	{
 		playerManager.Reset ();
 		playerManager.DisableControl ();
@@ -48,14 +59,29 @@ public class GameManager : MonoBehaviour {
 			yield return null;
 		}
 
+		if (this.isNight) {
+			RenderSettings.skybox = nightSkybox;
+			RenderSettings.customReflection = nightCubemap;
+			//RenderSettings.skybox.SetFloat ("_Exposure", 0.5f);
+			//RenderSettings.ambientIntensity = 0f;
+		} else {
+			RenderSettings.skybox = daySkybox;
+			RenderSettings.customReflection = dayCubemap;
+			//RenderSettings.skybox.SetFloat ("_Exposure", 4f);
+			//RenderSettings.ambientIntensity = 1f;
+		}
+
+		DynamicGI.UpdateEnvironment ();
+
 		gameLogic.setLevel(int.Parse(level));
 		gameLogic.Reset ();
 
 		level = null;
 	}
 
-	private IEnumerator StartCounter (int count)
+	IEnumerator StartCounter (int count)
 	{
+		DynamicGI.UpdateEnvironment ();
 		WaitForSeconds countWait = new WaitForSeconds (0.8f);
 		startCounter.GetComponentInChildren<Text> ().text = count.ToString();
 		yield return countWait;
@@ -65,7 +91,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	private IEnumerator RoundPlaying ()
+	IEnumerator RoundPlaying ()
 	{
 		playerManager.EnableControl ();
 
@@ -74,7 +100,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	private IEnumerator RoundEnding ()
+	IEnumerator RoundEnding ()
 	{
 		playerManager.DisableControl ();
 		yield return endWait;

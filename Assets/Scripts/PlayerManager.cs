@@ -9,7 +9,8 @@ public class PlayerManager : MonoBehaviour {
 	PlayerMovement playerMovement;
 
 	void OnEnable() {
-		playerSpawnPoint = playerInstance.transform.position;
+		//playerSpawnPoint = playerInstance.transform.position;
+		playerSpawnPoint = new Vector3(0f, 0f, 0f);
 		playerMovement = playerInstance.GetComponent<PlayerMovement> ();
 	
 	}
