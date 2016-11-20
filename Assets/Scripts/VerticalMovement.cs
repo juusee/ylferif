@@ -37,6 +37,7 @@ public class VerticalMovement : MonoBehaviour
 		for (int i = 0; i < collisionGameObjectTags.Length; ++i) {
 			if (collisionGameObjectTags[i].tag == col.gameObject.tag) {
 				goDown = collisionGameObjectTags[i].goDown;
+				print (transform.name + " "  + col.transform.name + " " + goDown);
 			}
 		}
 	}

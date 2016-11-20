@@ -13,7 +13,7 @@ public class GameLogic : MonoBehaviour {
 
 	public Transform player;
 	public Transform containerSpawnPoint;
-	public int containerBufferFront;
+	public float containerBufferFront;
 
 	List<GameObject> containers = new List<GameObject> ();
 	List<GameObject> piles = new List<GameObject> ();
@@ -25,7 +25,7 @@ public class GameLogic : MonoBehaviour {
 	float containerLength;
 	int containerBufferBack = 2;
 	int containerCount = 0;
-	float levelLength = 3000f;
+	float levelLength = 1500f;
 	int level;
 
 	void Start ()
@@ -123,17 +123,33 @@ public class GameLogic : MonoBehaviour {
 	}
 
 	GameObject getContainer() {
+		GameObject previousContainer = null;
 		GameObject newContainer = null;
 		for (int i = 0; i < containers.Count; ++i) {
-			if (!containers[i].activeSelf || containers[i].transform.position.x < (player.transform.position.x - containerBufferBack * containerLength)) {
+			if (!containers [i].activeSelf || containers [i].transform.position.x < (player.transform.position.x - containerBufferBack * containerLength)) {
 				newContainer = containers [i];
 				break;
+			} 
+		}
+		// todo better
+		for (int i = 0; i < containers.Count; ++i) {
+			if (previousContainer == null || (containers[i].activeSelf && containers [i].transform.position.x > previousContainer.transform.position.x)) {
+				previousContainer = containers [i];
 			}
 		}
 		if (newContainer == null) {
 			newContainer = (GameObject) Instantiate (container);
 			newContainer.transform.name = newContainer.transform.name + containers.Count.ToString();
 			containers.Add (newContainer);
+		}
+
+		if (previousContainer != null) {
+			newContainer.transform.position = previousContainer.GetComponent<ContainerMovement> ().getTargetPosition ();
+			newContainer.transform.rotation = previousContainer.GetComponent<ContainerMovement> ().getTargetRotation ();
+		}
+		// Todo better.Do not rotate first container
+		if (newContainer.transform.position.x > 0) {
+			newContainer.GetComponent<ContainerMovement> ().setNewSpeedAndAngle ();
 		}
 		newContainer.SetActive (false);
 		return newContainer;
@@ -221,17 +237,16 @@ public class GameLogic : MonoBehaviour {
 
 	public void Reset ()
 	{
-		if (level == 1) {
-			levelLength = 1000f;
+		if (level == 4) {
+			ContainerMovement.canMove = true;
+		} else {
+			ContainerMovement.canMove = false;
 		}
-		if (level == 2) {
-			levelLength = 1500f;
-		}
-		if (level == 3) {
-			levelLength = 1500f;
-		}
+
 		// todo if level is same don't destroy gameobjects
 		for (int i = 0; i < containers.Count; ++i) {
+			containers [i].transform.position = Vector3.zero;
+			containers [i].transform.rotation = Quaternion.identity;
 			containers [i].SetActive (false);
 		}
 		foreach (GameObject pile in piles) {

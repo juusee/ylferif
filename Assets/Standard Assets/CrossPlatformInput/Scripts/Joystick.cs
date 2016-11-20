@@ -88,7 +88,7 @@ namespace UnityStandardAssets.CrossPlatformInput
 				// delta = Mathf.Clamp(delta, -MovementRange, MovementRange); JussiRJ
 				newPos.y = delta;
 			}
-			transform.position = Vector3.ClampMagnitude(new Vector3(newPos.x, newPos.y, newPos.z), MovementRange) + m_StartPos; // JussiRJ
+			transform.position = Vector3.ClampMagnitude(new Vector3(newPos.x, newPos.y, newPos.z), MovementRange) + m_StartPos;
 			UpdateVirtualAxes(transform.position);
 		}
 
