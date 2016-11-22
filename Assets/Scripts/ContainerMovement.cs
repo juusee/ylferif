@@ -10,7 +10,6 @@ public class ContainerMovement : MonoBehaviour {
 
 	Vector3 origin;
 	Vector3 axis;
-	Vector3 angleVelocity;
 	Rigidbody containerRB;
 
 	Quaternion startAngle;
@@ -40,13 +39,10 @@ public class ContainerMovement : MonoBehaviour {
 		Quaternion q = Quaternion.AngleAxis (angle, axis);
 		targetPosition = q * (containerRB.transform.localPosition - origin) + origin;
 		targetRotation = containerRB.transform.localRotation * q;
-
-		print (transform.name + " " + transform.position + " " + transform.rotation);
-		print (transform.name + " " + targetPosition + " " + targetRotation);
 	}
 
 	void FixedUpdate()
-	{			
+	{
 		if (canMove && Quaternion.Angle(startAngle, transform.rotation) < targetAngle) {
 			Quaternion q = Quaternion.AngleAxis (speed, axis);
 			containerRB.MovePosition (q * (containerRB.transform.localPosition - origin) + origin);
@@ -54,16 +50,23 @@ public class ContainerMovement : MonoBehaviour {
 		}
 	}
 
-	public void setNewSpeedAndAngle() {
-		targetAngle = Random.Range (50, 60);
+	public void SetNewSpeedAndAngle()
+	{
+		targetAngle = Random.Range (50, 70);
 		speed = Random.value < 0.5 ? 0.5f : -0.5f;
 	}
 
-	public Quaternion getTargetRotation() {
+	public void ResetSpeedAndAngle()
+	{
+		targetAngle = 0;
+		speed = 0;
+	}
+
+	public Quaternion GetTargetRotation() {
 		return targetRotation;
 	}
 
-	public Vector3 getTargetPosition() {
+	public Vector3 GetTargetPosition() {
 		return targetPosition;
 	}
 }

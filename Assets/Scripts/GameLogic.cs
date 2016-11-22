@@ -133,7 +133,7 @@ public class GameLogic : MonoBehaviour {
 		}
 		// todo better
 		for (int i = 0; i < containers.Count; ++i) {
-			if (previousContainer == null || (containers[i].activeSelf && containers [i].transform.position.x > previousContainer.transform.position.x)) {
+			if (containers[i].activeSelf && (previousContainer == null || containers [i].transform.position.x > previousContainer.transform.position.x)) {
 				previousContainer = containers [i];
 			}
 		}
@@ -143,13 +143,16 @@ public class GameLogic : MonoBehaviour {
 			containers.Add (newContainer);
 		}
 
-		if (previousContainer != null) {
-			newContainer.transform.position = previousContainer.GetComponent<ContainerMovement> ().getTargetPosition ();
-			newContainer.transform.rotation = previousContainer.GetComponent<ContainerMovement> ().getTargetRotation ();
-		}
-		// Todo better.Do not rotate first container
-		if (newContainer.transform.position.x > 0) {
-			newContainer.GetComponent<ContainerMovement> ().setNewSpeedAndAngle ();
+		// Todo better place
+		if (level == 4) {
+			if (previousContainer != null) {
+				newContainer.transform.position = previousContainer.GetComponent<ContainerMovement> ().GetTargetPosition ();
+				newContainer.transform.rotation = previousContainer.GetComponent<ContainerMovement> ().GetTargetRotation ();
+			}
+			// Todo better. Do not rotate first container
+			if (previousContainer != null) {
+				newContainer.GetComponent<ContainerMovement> ().SetNewSpeedAndAngle ();
+			}		
 		}
 		newContainer.SetActive (false);
 		return newContainer;
@@ -239,14 +242,17 @@ public class GameLogic : MonoBehaviour {
 	{
 		if (level == 4) {
 			ContainerMovement.canMove = true;
+			containerBufferFront = 2.5f;
 		} else {
 			ContainerMovement.canMove = false;
+			containerBufferFront = 8f;
 		}
 
 		// todo if level is same don't destroy gameobjects
 		for (int i = 0; i < containers.Count; ++i) {
 			containers [i].transform.position = Vector3.zero;
 			containers [i].transform.rotation = Quaternion.identity;
+			containers [i].GetComponent<ContainerMovement> ().ResetSpeedAndAngle ();
 			containers [i].SetActive (false);
 		}
 		foreach (GameObject pile in piles) {
@@ -269,7 +275,7 @@ public class GameLogic : MonoBehaviour {
 			Destroy (guillotine);
 		}
 		guillotines = new List<GameObject> ();
-		containerSpawnPoint.transform.position = new Vector3 (0, 0, 0);
+		containerSpawnPoint.transform.position = new Vector3 (65, 0, 0);
 		containerCount = 0;
 	}
 

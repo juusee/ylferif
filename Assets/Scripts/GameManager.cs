@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator GameLoop ()
-	{		
+	{
 		panel.SetActive (true);
 		yield return StartCoroutine (RoundStarting());
 		panel.SetActive (false);
@@ -52,8 +52,8 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator RoundStarting ()
 	{
-		playerManager.Reset ();
 		playerManager.DisableControl ();
+		playerManager.Reset ();
 
 		while (level == null) {
 			yield return null;
@@ -75,6 +75,7 @@ public class GameManager : MonoBehaviour {
 
 		gameLogic.setLevel(int.Parse(level));
 		gameLogic.Reset ();
+		gameLogic.GetComponent<GameLogic> ().enabled = true;
 
 		level = null;
 	}
